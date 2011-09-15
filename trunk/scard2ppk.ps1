@@ -114,9 +114,14 @@ foreach ($c in $certs.GetEnumerator()) {
 
 foreach ($c in $valid_certs) {
     $subject = &$pkcs15tool "-r" $c.Get_Item("ID")  2>$null | &$openssl "x509" "-noout" "-subject" 2>$null | %{$_ -replace "^.*emailAddress=([^/]*).*", "`$1" -replace "[@.]", "_"}
+
     $filename = -join("SC_", $subject, ".ppk")
-    Write-Output "Generating file " $filename
+    -join("Generating file ", $filename) | Write-Output 
     $content = -join("PuTTYcard,PuTTYiso7816.dll,", $c.Get_Item("ppk"))
     Write-Output $content >$filename
+
+    $filename = -join("SC_", $subject, ".pub")
+    -join("Generating file ", $filename) | Write-Output 
+    &$pkcs15tool "-r" $c.Get_Item("ID")  2>$null | &$openssl "x509" "-noout" "-pubkey" >$filename
 }
 
