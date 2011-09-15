@@ -113,16 +113,22 @@ while (my ($id, $cert) = each %certs) {
 }
 
 foreach $cert (@valid_certs) {
+    my $filename;
     (my $esc_pt = $pkcs15tool) =~ s/ /\\ /g;
     (my $esc_os = $openssl) =~ s/ /\\ /g;
     my $subject = `$esc_pt -r $cert->{'ID'} 2>/dev/null | $esc_os x509 -noout -subject 2>/dev/null`;
     $subject =~ s!^.*emailAddress=([^/]*).*!$1!;
     $subject =~ tr/@.\r\n/__/d;
-    my $filename = "SC_$subject.ppk";
+
+    $filename = "SC_$subject.ppk";
     print "Generating file $filename\n";
     my $content = "PuTTYcard,PuTTYiso7816.dll,$cert->{'ppk'}\n";
     open($fd, ">", $filename) or die "Cannot create $filename: $!\n";
     print $fd $content;
     close($fd);
+
+    $filename = "SC_$subject.pub";
+    print "Generating file $filename\n";
+    system("$esc_pt -r $cert->{'ID'} 2>/dev/null | $esc_os x509 -noout -pubkey >$filename");
 }
 # vim:ft=perl:ai:si:ts=4:sw=4:et
