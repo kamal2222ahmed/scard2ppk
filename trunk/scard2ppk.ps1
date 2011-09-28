@@ -4,7 +4,7 @@ $pkcs15tool = "C:\Program Files\OpenSC\pkcs15-tool.exe"
 $openssl = "C:\OpenSSL-Win32\bin\openssl.exe"
 
 # interesting attributes of certs, keys and pins
-$cert_interesting = @{"ID"=1; "Path"=1; "Flags"=1 }
+$cert_interesting = @{"ID"=1; "Path"=1; "Object Flags"=1 }
 $key_interesting = @{"ID"=1; "Path"=1; "Key ref"=1; "Auth ID"=1; "Usage"=1 }
 $pin_interesting = @{"ID"=1; "Path"=1; "Reference"=1; "Tries left"=1 }
 
@@ -50,9 +50,9 @@ foreach ($line in &$pkcs15tool "-D") {
     }
     elseif (!$line) {
         # this is an empty line -> the item being parsed is complete
-        if ($cert -and ($cert.Get_Item("Flags") -ne 0)) {
+        if ($cert -and ($cert.Get_Item("Object Flags") -ne "[0x0]")) {
             # this is a valid cert -> add it to the certs' collector hash
-            $cert.Remove("Flags")
+            $cert.Remove("Object Flags")
             $certs.add($cert.Get_Item("ID"), $cert)
             $cert = ''
         }

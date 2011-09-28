@@ -6,7 +6,7 @@ my $pkcs15tool = "/cygdrive/c/Program\ Files/OpenSC/pkcs15-tool.exe";
 my $openssl = "/cygdrive/c/OpenSSL-Win32/bin/openssl.exe";
 
 # interesting attributes of certs, keys and pins
-my %cert_interesting = ('ID' => 1, 'Path' => 1, 'Flags' => 1);
+my %cert_interesting = ('ID' => 1, 'Path' => 1, 'Object Flags' => 1);
 my %key_interesting  = ('ID' => 1, 'Path' => 1, 'Key ref' => 1, 'Auth ID' => 1, 'Usage' => 1);
 my %pin_interesting  = ('ID' => 1, 'Path' => 1, 'Reference' => 1, 'Tries left' => 1);
 
@@ -51,9 +51,9 @@ foreach my $line (readline($fd)) {
     }
     elsif ($line =~ /^\s*$/) {
         # this is an empty line -> the item being parsed is complete
-        if ($cert and $cert->{'Flags'} != 0) {
+        if ($cert and $cert->{'Object Flags'} ne '[0x0]') {
             # this is a valid cert -> add it to the certs' collector hash
-            delete $cert->{'Flags'};
+            delete $cert->{'Object Flags'};
             $certs{$cert->{'ID'}} = $cert;
             undef $cert;
         }
