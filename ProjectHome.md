@@ -1,0 +1,1 @@
+This tool extracts the necessary information to use a SmartCard with PuTTYcard ssh agent.
